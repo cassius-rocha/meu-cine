@@ -33,7 +33,7 @@ public class Movie {
     private String userVote;
 
     @ElementCollection
-    private List<String> watchHere = new ArrayList<>();
+    private List<String> watchProviders = new ArrayList<>();
 
     @ManyToMany(mappedBy = "movies")
     private List<Shelf> shelves = new ArrayList<>();
@@ -42,7 +42,7 @@ public class Movie {
     }
 
     public Movie(Long id, String title, String originalTitle, String overview, String releaseDate,
-                 String director, String voteAverage, String userVote, List<String> watchHere) {
+                 String director, String voteAverage, String userVote, List<String> watchProviders) {
         this.id = id;
         this.title = title;
         this.originalTitle = originalTitle;
@@ -51,7 +51,7 @@ public class Movie {
         this.director = director;
         this.voteAverage = voteAverage;
         this.userVote = userVote;
-        this.watchHere = watchHere;
+        this.watchProviders = watchProviders;
     }
 
     // Getters e setters
@@ -120,12 +120,12 @@ public class Movie {
         this.userVote = userVote;
     }
 
-    public List<String> getWatchHere() {
-        return watchHere;
+    public List<String> getwatchProviders() {
+        return watchProviders;
     }
 
-    public void setWatchHere(List<String> watchHere) {
-        this.watchHere = watchHere;
+    public void setwatchProviders(List<String> watchProviders) {
+        this.watchProviders = watchProviders;
     }
 
     public List<Shelf> getShelves() {
