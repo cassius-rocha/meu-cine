@@ -26,11 +26,9 @@ public class Movie {
     @Column(nullable = false)
     private String director;
 
-    @Column(nullable = false)
-    private String voteAverage;
+    private Integer voteAverage;
 
-    @Column(nullable = false)
-    private String userVote;
+    private Integer userVote;
 
     @ElementCollection
     private List<String> watchProviders = new ArrayList<>();
@@ -42,7 +40,7 @@ public class Movie {
     }
 
     public Movie(Long id, String title, String originalTitle, String overview, String releaseDate,
-                 String director, String voteAverage, String userVote, List<String> watchProviders) {
+                 String director, Integer voteAverage, Integer userVote, List<String> watchProviders) {
         this.id = id;
         this.title = title;
         this.originalTitle = originalTitle;
@@ -104,19 +102,19 @@ public class Movie {
         this.director = director;
     }
 
-    public String getVoteAverage() {
+    public Integer getVoteAverage() {
         return voteAverage;
     }
 
-    public void setVoteAverage(String voteAverage) {
+    public void setVoteAverage(Integer voteAverage) {
         this.voteAverage = voteAverage;
     }
 
-    public String getUserVote() {
+    public Integer getUserVote() {
         return userVote;
     }
 
-    public void setUserVote(String userVote) {
+    public void setUserVote(Integer userVote) {
         this.userVote = userVote;
     }
 
