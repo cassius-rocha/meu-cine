@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -95,15 +96,51 @@ public class MovieService {
         return personMovies;
     }
 
+    private String getMovieDirector(Long movieId) throws IOException, InterruptedException {
+        String endpoint = tmdbBaseUrl + "/movie/" + movieId + "/credits";
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endpoint))
+                .header("Authorization", "Bearer " + tmdbToken)
+                .header("Accept", "application/json")
+                .GET()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        JsonNode root = mapper.readTree(response.body());
+
+        JsonNode crewArray = root.get("crew");
+        if (crewArray != null && crewArray.isArray()) {
+            for (JsonNode crewMember : crewArray) {
+                String job = crewMember.get("job").asText();
+                if ("Director".equalsIgnoreCase(job)) {
+                    return crewMember.get("name").asText();
+                }
+            }
+        }
+
+        return "Desconhecido";
+    }
+
     private MovieDTO parseMovieFromNode(JsonNode node) {
         Long id = node.has("id") ? node.get("id").asLong() : null;
         String title = node.has("title") ? node.get("title").asText() : node.path("name").asText();
         String originalTitle = node.has("original_title") ? node.get("original_title").asText() : title;
         String overview = node.has("overview") ? node.get("overview").asText() : "";
         String releaseDate = node.has("release_date") ? node.get("release_date").asText() : "";
+
+        String director = "";
+        try {
+            director = getMovieDirector(id);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace(); // ou use um logger se preferir
+            director = "Desconhecido"; // fallback caso ocorra erro
+        }
+
         String posterPath = node.has("poster_path") ? node.get("poster_path").asText() : "";
         Double voteAverage = node.has("vote_average") ? node.get("vote_average").asDouble() : 0.0;
 
-        return new MovieDTO(id, title, originalTitle, overview, releaseDate, "Desconhecido", posterPath, voteAverage, null, new ArrayList<>(), new ArrayList<>());
+        return new MovieDTO(id, title, originalTitle, overview, releaseDate, director, posterPath, voteAverage,
+                null, new ArrayList<>(), new ArrayList<>());
     }
 }
