@@ -26,6 +26,9 @@ public class Movie {
     @Column(nullable = false)
     private String director;
 
+    @Column(nullable = false)
+    private String posterPath;
+
     private Integer voteAverage;
 
     private Integer userVote;
@@ -40,13 +43,14 @@ public class Movie {
     }
 
     public Movie(Long id, String title, String originalTitle, String overview, String releaseDate,
-                 String director, Integer voteAverage, Integer userVote, List<String> watchProviders) {
+                 String director, String posterPath, Integer voteAverage, Integer userVote, List<String> watchProviders) {
         this.id = id;
         this.title = title;
         this.originalTitle = originalTitle;
         this.overview = overview;
         this.releaseDate = releaseDate;
         this.director = director;
+        this.posterPath = posterPath;
         this.voteAverage = voteAverage;
         this.userVote = userVote;
         this.watchProviders = watchProviders;
@@ -100,6 +104,14 @@ public class Movie {
 
     public void setDirector(String director) {
         this.director = director;
+    }
+
+    public String getPosterPath() {
+        return posterPath;
+    }
+
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
     }
 
     public Integer getVoteAverage() {

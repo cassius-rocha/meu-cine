@@ -11,6 +11,7 @@ public class MovieDTO {
     private String overview;
     private String releaseDate;
     private String director;
+    private String posterPath;
     private Double voteAverage;
     private Double userVote;
     private List<String> watchProviders = new ArrayList<>();
@@ -22,7 +23,7 @@ public class MovieDTO {
 
     // Construtor com todos os campos
     public MovieDTO(Long id, String title, String originalTitle, String overview,
-                    String releaseDate, String director, Double voteAverage,
+                    String releaseDate, String director, String posterPath, Double voteAverage,
                     Double userVote, List<String> watchProviders, List<String> shelves) {
         this.id = id;
         this.title = title;
@@ -30,6 +31,7 @@ public class MovieDTO {
         this.overview = overview;
         this.releaseDate = releaseDate;
         this.director = director;
+        this.posterPath = posterPath;
         this.voteAverage = voteAverage;
         this.userVote = userVote;
         this.watchProviders = watchProviders;
@@ -84,6 +86,14 @@ public class MovieDTO {
 
     public void setDirector(String director) {
         this.director = director;
+    }
+
+    public String getPosterPath() {
+        return posterPath;
+    }
+
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
     }
 
     public Double getVoteAverage() {
