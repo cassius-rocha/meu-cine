@@ -3,8 +3,17 @@ package com.api.backend.service;
 import com.api.backend.dto.MovieDTO;
 import com.api.backend.dto.Person;
 import com.api.backend.dto.SearchResponse;
+import com.api.backend.models.Movie;
+import com.api.backend.models.User;
+import com.api.backend.models.Shelf;
+
+import com.api.backend.repository.MovieRepository;
+import com.api.backend.repository.ShelfRepository;
+import com.api.backend.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +29,18 @@ import java.util.List;
 
 @Service
 public class MovieService {
+
+    private final MovieRepository movieRepository;
+
+    private final ShelfRepository shelfRepository;
+
+    private final UserRepository userRepository;    
+
+    public MovieService(MovieRepository movieRepository, ShelfRepository shelfRepository, UserRepository userRepository) {
+        this.movieRepository = movieRepository;
+        this.shelfRepository = shelfRepository;
+        this.userRepository = userRepository;
+    }
 
     @Value("${tmdb.api.token}")
     private String tmdbToken;
@@ -143,4 +164,31 @@ public class MovieService {
         return new MovieDTO(id, title, originalTitle, overview, releaseDate, director, posterPath, voteAverage,
                 null, new ArrayList<>(), new ArrayList<>());
     }
+
+    public Movie saveMovieToShelf(Movie movie, String shelfName, String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        String normalizedShelfName = shelfName.trim().toLowerCase();
+
+        Shelf shelf = shelfRepository.findByNameIgnoreCaseAndUser(normalizedShelfName, user)
+                .orElseGet(() -> {
+                    Shelf newShelf = new Shelf();
+                    newShelf.setName(normalizedShelfName);
+                    newShelf.setUser(user);
+                    return newShelf;
+                });
+
+        Movie existingMovie = movieRepository.findById(movie.getId())
+                .orElseGet(() -> movieRepository.save(movie));
+
+        if (!shelf.getMovies().contains(existingMovie)) {
+            shelf.getMovies().add(existingMovie);
+        }
+
+        shelfRepository.save(shelf);
+
+        return existingMovie;
+    }
+
 }
