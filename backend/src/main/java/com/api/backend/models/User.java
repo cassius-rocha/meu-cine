@@ -1,13 +1,18 @@
 package com.api.backend.models;
 
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 @Entity
-public class User {
+public class User implements UserDetails{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,27 +30,41 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Shelf> shelves = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "user_roles",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles = new HashSet<>();
+    @Column(nullable = false)
+    private UserRole role;
+
+    private String login;
 
     public User() {
     }
 
-    public User(Long id, String name, String email, String password, List<Shelf> shelves, Set<Role> roles) {
+    public User(Long id, String name, String email, String password, List<Shelf> shelves, 
+    UserRole role, String login) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.shelves = shelves;
-        this.roles = roles;
+        this.role = role;
+        this.login = login;
     }
 
-    // Getters e setters
+
+    public User(String login, String password, UserRole role) {
+        this.login = login;
+        this.password = password;
+        this.role = role;
+    }
+
+    public User(String login2, String encryptedPassword, String email2, String name2,
+            UserRole role2) {
+
+        this.login = login2;
+        this.password = encryptedPassword;
+        this.email = email2;
+        this.name = name2;
+        this.role = role2;
+    }
 
     public Long getId() {
         return id;
@@ -67,8 +86,12 @@ public class User {
         return shelves;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
+    public UserRole getRole() {
+        return role;
+    }
+
+    public String getLogin() {
+        return login;
     }
 
     public void setId(Long id) {
@@ -91,7 +114,27 @@ public class User {
         this.shelves = shelves;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    public void setRole(UserRole role) {
+        this.role = role;
     }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if(this.role == UserRole.ADMIN) {
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        }
+        else {
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        }
+    }
+
+    @Override
+    public String getUsername() {
+        return login;
+    }
+
 }

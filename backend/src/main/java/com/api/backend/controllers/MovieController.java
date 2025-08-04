@@ -6,14 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.api.backend.dto.SearchResponse;
 import com.api.backend.models.Movie;
-import com.api.backend.models.Shelf;
-import com.api.backend.models.User;
-import com.api.backend.repository.MovieRepository;
-import com.api.backend.repository.ShelfRepository;
-import com.api.backend.repository.UserRepository;
 import com.api.backend.service.MovieService;
 
 @RestController
